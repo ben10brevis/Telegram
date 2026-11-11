@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#06132f"/><stop offset=".55" stop-color="#0754b8"/><stop offset="1" stop-color="#00bde9"/></linearGradient>
+ <linearGradient id="glass" x1=".15" y1="0" x2=".85" y2="1"><stop stop-color="#fff" stop-opacity=".95"/><stop offset=".38" stop-color="#8beaff" stop-opacity=".72"/><stop offset=".72" stop-color="#168bff" stop-opacity=".52"/><stop offset="1" stop-color="#fff" stop-opacity=".9"/></linearGradient>
+ <linearGradient id="n" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset=".55" stop-color="#b5f4ff"/><stop offset="1" stop-color="#42baff"/></linearGradient>
+ <filter id="glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="13"/></filter>
+ </defs>
+ <rect width="512" height="512" rx="118" fill="url(#bg)"/>
+ <circle cx="410" cy="105" r="100" fill="#16d9ff" opacity=".22" filter="url(#glow)"/>
+ <path d="M256 76c-103 0-186 72-186 161 0 52 29 98 75 128l-16 72 88-43c13 3 26 4 39 4 103 0 186-72 186-161S359 76 256 76Z" fill="url(#glass)" stroke="#d9faff" stroke-width="9"/>
+ <path d="M150 310V179h37l139 91V179h37v131h-37l-139-91v91Z" fill="url(#n)" stroke="#fff" stroke-opacity=".75" stroke-width="4" stroke-linejoin="round"/>
+ <path d="M95 155c28-51 88-83 157-83" fill="none" stroke="#fff" stroke-opacity=".72" stroke-width="7" stroke-linecap="round"/>
+</svg>
