@@ -1,46 +1,43 @@
-## Telegram messenger for Android
+# NavGram
 
-[Telegram](https://telegram.org) is a messaging app with a focus on speed and security. It’s superfast, simple and free.
-This repo contains the official source code for [Telegram App for Android](https://play.google.com/store/apps/details?id=org.telegram.messenger).
+**NavGram** is an independent, community-built Android messaging client based on the Telegram Android source, with a custom iOS-inspired Liquid Glass visual direction.
 
-## Creating your Telegram Application
+> NavGram is an unofficial third-party client. It is not affiliated with, endorsed by, or supported by Telegram. Telegram is a trademark of its respective owner.
 
-We welcome all developers to use our API and source code to create applications on our platform.
-There are several things we require from **all developers** for the moment.
+## Identity
 
-1. [**Obtain your own api_id**](https://core.telegram.org/api/obtaining_api_id) for your application.
-2. Please **do not** use the name Telegram for your app — or make sure your users understand that it is unofficial.
-3. Kindly **do not** use our standard logo (white paper plane in a blue circle) as your app's logo.
-3. Please study our [**security guidelines**](https://core.telegram.org/mtproto/security_guidelines) and take good care of your users' data and privacy.
-4. Please remember to publish **your** code too in order to comply with the licences.
+- App name: **NavGram**
+- Android application ID: `com.navgram.android`
+- Debug application ID: `com.navgram.android.beta`
+- Standalone application ID: `com.navgram.android.web`
+- Visual direction: clear Liquid Glass, soft cyan/blue highlights and a custom NavGram mark.
 
-### API, Protocol documentation
+## Builds
 
-Telegram API manuals: https://core.telegram.org/api
+The existing GitHub Actions workflow builds a debug APK and uploads it as a workflow artifact. Workflow artifacts are temporary build outputs, not permanent releases.
 
-MTproto protocol manuals: https://core.telegram.org/mtproto
+Open **Actions → Build APK → Run workflow** to start a debug build. Download the APK from the completed run's Artifacts section.
 
-### Compilation Guide
+A signed public release APK requires the project maintainer's own signing keystore and credentials. Never publish or reuse the upstream dummy keystore. Configure the signing secrets before enabling release distribution.
 
-**Note**: In order to support [reproducible builds](https://core.telegram.org/reproducible-builds), this repo contains dummy release.keystore,  google-services.json and filled variables inside BuildVars.java. Before publishing your own APKs please make sure to replace all these files with your own.
+## Required project configuration
 
-You will require Android Studio 2025.1.4, Android NDK 27.2.12479018 and Android SDK 36.
+Before distributing builds, the maintainer must:
 
-1. Clone the Telegram source code with its submodules:
-   ```bash
-   git clone --recursive --shallow-submodules https://github.com/DrKLO/Telegram.git Telegram
-   ```
-   In case you forgot the `--recursive` flag, change to the `Telegram` directory and run:
-   ```bash
-   git submodule init && git submodule update --init --recursive --depth=1
-   ```
-2. Copy your release.keystore into TMessagesProj/config
-3. Fill out RELEASE_KEY_PASSWORD, RELEASE_KEY_ALIAS, RELEASE_STORE_PASSWORD in gradle.properties to access your  release.keystore
-4.  Go to https://console.firebase.google.com/, create two android apps with application IDs org.telegram.messenger and org.telegram.messenger.beta, turn on firebase messaging and download google-services.json, which should be copied to the same folder as TMessagesProj.
-5. Open the project in the Studio (note that it should be opened, NOT imported).
-6. Fill out values in TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java – there’s a link for each of the variables showing where and which data to obtain.
-7. You are ready to compile Telegram.
+1. Obtain and use their own Telegram API `api_id` and `api_hash`: https://core.telegram.org/api/obtaining_api_id
+2. Configure Firebase for the NavGram application IDs and supply a project-owned `google-services.json`.
+3. Configure a project-owned Google Maps API key with appropriate package and signing-certificate restrictions.
+4. Generate a private release keystore and store it securely. Keep keystore files and passwords out of Git.
+5. Verify privacy disclosures, permissions, security practices and the app's complete source/build instructions.
 
-### Localization
+The workflow expects `TG_APP_ID` and `TG_APP_HASH` repository Actions secrets for the Telegram API credentials.
 
-We moved all translations to https://translations.telegram.org/en/android/. Please use it.
+## Upstream and licensing
+
+NavGram is based on the Telegram for Android source: https://github.com/DrKLO/Telegram
+
+This repository retains the upstream license and notices. Review the applicable source, dependency and asset licenses before distributing modified binaries. Publish the corresponding source for every distributed build as required by the applicable licenses.
+
+## Disclaimer
+
+NavGram is an independent client project. It does not represent itself as the official Telegram application, and it does not use Telegram's standard paper-plane launcher mark as its app identity.
