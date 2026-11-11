@@ -1,5 +1,7 @@
 # NavGram
 
+<p align="center"><img src="assets/branding/navgram-logo.svg" alt="NavGram Liquid Glass logo" width="180" /></p>
+
 **NavGram** is an independent, community-built Android messaging client based on the Telegram Android source, with a custom iOS-inspired Liquid Glass visual direction.
 
 > NavGram is an unofficial third-party client. It is not affiliated with, endorsed by, or supported by Telegram. Telegram is a trademark of its respective owner.
