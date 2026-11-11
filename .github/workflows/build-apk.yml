@@ -24,10 +24,11 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: ''
 
       - name: Install NDK and CMake
         run: |
-          # Match ndkVersion in TMessagesProj/build.gradle (check your fork)
           sdkmanager "ndk;21.4.7075529" "cmake;3.10.2.4988404"
 
       - name: Cache Gradle
