@@ -49,15 +49,18 @@ jobs:
           sed -i -E "s/APP_ID = [0-9]+;/APP_ID = ${TG_APP_ID};/" "$F"
           sed -i -E "s/APP_HASH = \"[^\"]*\";/APP_HASH = \"${TG_APP_HASH}\";/" "$F"
 
-      # BLUR_SCALE: 0 = no blur (clear glass everywhere), 1 = stock Telegram, 0.3 = light blur
-      - name: Apply clear-glass patch (blur 0)
+      # BLUR_SCALE: 0 = no blur, 1 = stock Telegram, 0.3 = light blur
+      # TINT_SCALE: how opaque the glass fill is. 1 = stock, 0.6 = clear glass, 0.4 = very clear
+      - name: Apply clear-glass patch (no blur, see-through glass)
         env:
           BLUR_SCALE: "0"
+          TINT_SCALE: "0.6"
         run: |
           python3 - <<'PY'
           import os, re, sys
 
           SCALE = os.environ.get("BLUR_SCALE", "0")
+          TINT = os.environ.get("TINT_SCALE", "0.6")
           root = "TMessagesProj/src/main/java/org/telegram"
 
           # 1) new helper
@@ -72,8 +75,15 @@ jobs:
           public class GlassTuning {
               public static final float BLUR_SCALE = __SCALE__f;
 
+              public static final float TINT_SCALE = __TINT__f;
+
               public static float blur(float radius) {
                   return radius * BLUR_SCALE;
+              }
+
+              /** How opaque the glass fill is: 1 = stock Telegram, lower = more see-through. */
+              public static float tint(float alpha) {
+                  return Math.max(0f, Math.min(1f, alpha * TINT_SCALE));
               }
 
               @Nullable
@@ -88,7 +98,7 @@ jobs:
                   return first == null ? second : RenderEffect.createChainEffect(first, second);
               }
           }
-          """.replace("__SCALE__", str(float(SCALE)))
+          """.replace("__SCALE__", str(float(SCALE))).replace("__TINT__", str(float(TINT)))
           open(f"{root}/utils/glass/GlassTuning.java", "w").write(tuning)
 
           def sub(path, old, new, count=1):
@@ -166,7 +176,20 @@ jobs:
                  "radius = org.telegram.utils.glass.GlassTuning.blur(radius);\n        renderNode.setRenderEffect(radius > 0 ? RenderEffect.createBlurEffect(radius, radius, Shader.TileMode.CLAMP) : null);")
           sub(p, "renderNode.setRenderEffect(RenderEffect.createChainEffect(RenderEffect.createBlurEffect(radius, radius, Shader.TileMode.CLAMP), effect));",
                  "radius = org.telegram.utils.glass.GlassTuning.blur(radius);\n        renderNode.setRenderEffect(org.telegram.utils.glass.GlassTuning.chain(org.telegram.utils.glass.GlassTuning.blurEffect(radius, radius), effect));")
-          print("glass blur patch applied, BLUR_SCALE =", SCALE)
+
+          # 5) glass fill transparency (tab bar, header, menus, popups)
+          p = f"{root}/ui/Components/blur3/drawable/color/impl/BlurredBackgroundProviderImpl.java"
+          src = open(p).read()
+          src, n1 = re.subn(r"(LiteMode\.isEnabled\(LiteMode\.FLAG_LIQUID_GLASS\) \? )([0-9.]+f)( : )([0-9.]+f)",
+                            r"\1GlassTuning.tint(\2)\3GlassTuning.tint(\4)", src)
+          src, n2 = re.subn(r"isDark \? 0\.85f : 0\.825f", "GlassTuning.tint(isDark ? 0.85f : 0.825f)", src)
+          src = src.replace("Theme.multAlpha(Theme.getColor(Theme.key_windowBackgroundWhite, r), 0.88f)",
+                            "Theme.multAlpha(Theme.getColor(Theme.key_windowBackgroundWhite, r), GlassTuning.tint(0.88f))")
+          if n1 < 5 or n2 < 2:
+              sys.exit(f"PATCH FAILED: tint patterns n1={n1} n2={n2}")
+          src = src.replace("\n\n", "\n\nimport org.telegram.utils.glass.GlassTuning;\n", 1) if "import org.telegram.utils.glass.GlassTuning;" not in src else src
+          open(p, "w").write(src)
+          print("glass patch applied, BLUR_SCALE =", SCALE, "TINT_SCALE =", TINT, "tint sites:", n1, n2)
           PY
 
       - name: Build debug APK
